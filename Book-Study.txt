@@ -1,0 +1,106 @@
+FPGA Book:
+
+Introduction
+
+    - Chpt 1: Skeleton of an HDL
+    - Chpt 2: Overview of FPGA
+    - Chpt 3: Medium-sized components with HDL
+    - Chpt 4: Memory elements and counters
+    - Chpt 5: Finite State Machine (FSM)
+    - Chpt 6: FSM with Data path (FSMD)
+    - Chpt 7: Universal Asynchronous Receiver and Transmitter (UART)
+    - Chpt 8: Keyboard interface
+    - Chpt 9: Mouse Interface
+    - Chpt 10: Memory controller (SRAM)
+    - Chpt 11: Internal Memory Blocks and Digital Clock Managment (DCM)
+    - Chpt 12: Video Syncronization Signals
+    - Chpt 13: Video Controller
+    - Chpt 14-17: PicoBlaze CISC, Assembly, IOs, Interrupts
+
+
+
+Chp1 - GATE-LEVEL Combinational Circuit
+
+    History: 
+        - VHSIC (Very high-speed integrated circuit) Hardware Description Language
+        - IEEE 1076 - 1987
+        - Describe and model a digital system
+
+    General Characteristics
+        - Is case insensitive(uppercase = lowercase)
+        - Is strongly typed: object must have a data type
+        - Uppercase letters commonly for constants
+        - and, or, and xor have the same precedence 
+        \(need to use parentheses to specify the order)
+        - Entities outline the I/O signals of the circuit
+        - Architecture body describes the operation
+        - Multiple bodies can be associated with an entity
+        - signal p0, p1: std_logic; -> "Internal signals" = Architecture variables
+
+    Structural Description:
+        - Component Instantiation to use subsystems in bigger systems
+        - We can utilize 1-bit comparator as building block for 2-bit comparator
+        - The work library is where entity and architecture units are stored
+        - xxx_unit: entity work.eq1(arch_xx);
+        - port map(input1_eq1=>input1, input2_eq2=>input2, output_eq1=>out);
+
+    Testbench:
+        - Used to verify the correctness of the circuit 
+        - Mimic a physical lab bench
+        - Examines output responses
+        - process\nbegin creates instance of the 2bit comparator 
+
+Chpt2 - OVERVIEW OF FPGA AND EDA SOFTWARE
+
+    Overview of a general FPGA device:
+        - FPGA is a logic device that contains a two dimensional array of generic
+        \logic cells and programmable switches
+        - A logic cell can be configured to perform a simple function
+        - A programmable switch can be customized to provide interconnections among
+        \the logic cells 
+        - logic cell contains a small configurable combinational circuit with a 
+        \D-type flip-flop(D FF)
+        - The most common method to implement a configurable combinational circuit
+        \is a look-up table (LUT)
+        - Macrocells complement logic cells and include memory blocks, combinational
+        \multipliers, clock management circuits and I\O interface circuits
+
+    More info and Xilinx Spartan-3:
+        - logic cell contains a four-input LUT and a D FF 
+        - Carry circuit: Acelera operações matemáticas. Faz parte do caminho de
+        \propagação do carry, que ocorre em somadores binários
+        - Multiplexador: Circuito que seleciona uma das várias entradas e a encaminha
+        \para a saída com base em um sinal de controle. Pode ser usado para expandir
+        \LUTs e permitir a criação de mux maiores
+        - SRAM: Tipo de memória RAM que mantém dados enquanto alimentação ativa,
+        \sem precisar de atualização periódica como a DRAM. Cada LUT pode ser 
+        \configurada com uma pequena SRAM de 16x1 permitindo armazenamento de dados 
+        \temporários dentro do FPGA
+        - Shift Register: Circuito que armazena e desloca bits para a direita 
+        \ou esqueda a cada pulso de clock
+        - Macroblocks in Spartan: Combinational multiplier, block RAM, digital clock 
+        manager(DCM), input/output block
+
+    Development Flow
+        1 - RTL code: Com HDL, define registradores, operações lógicas e fluxos
+        \de dados. O código é descrito no nível RTL(Register Transfer Level), ou 
+        seja, descrevendo como os dados se movem entre registradores a cada ciclo
+        \de clock
+        2 - Synthesis: Converte o código RTL em uma netlist(conjunto de portas
+        lógicas e flip-flops que implementam o design). É gerado uma netlist otimi
+        zada para o FPGA específico
+        3 - Implementation: Ocorre em três etapas->
+        \Mapping: Associa a netlist com os recursos disponíveis no FPGA(LUTs, FFS, RAMs, etc)
+        \Placement: Define onde cada componente será alocado dentro do FPGA
+        \Routing: Conecta os componentes garantindo que sinais cheguem no tempo correto
+        4 - Device Programming: Projeto convertido em bitstram e carregado na SRAM
+        \do FPGA ou gravado em memória flash externa. Então, FPGA começa a executar
+        \hardware configurado
+        - RTL simulation after RTL code, Funcional simulation after synth, 
+        \timing simulation after implementation.
+
+
+
+        
+
+
