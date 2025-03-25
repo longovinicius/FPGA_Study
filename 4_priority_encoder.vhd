@@ -4,8 +4,8 @@ use ieee.std_logic_1164.all;
 entity priority_encoder is
     port(
         r       : in std_logic_vector(4 downto 1);
-        pcode   : out std_logic_vector(2 downto 0);
-    )
+        pcode   : out std_logic_vector(2 downto 0)
+    );
 end priority_encoder;
 
 architecture cond_arch of priority_encoder is
