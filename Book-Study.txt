@@ -99,6 +99,42 @@ Chpt2 - OVERVIEW OF FPGA AND EDA SOFTWARE
         - RTL simulation after RTL code, Funcional simulation after synth, 
         \timing simulation after implementation.
 
+Chpt3 - RT-LEVEL COMBINATIONAL CIRCUIT 
+
+    Introduction
+        - Simple logical Operators describe gate-level design, composed of logic cells
+        - Module-level circuits are composed of intermediate-sized components, like
+        \adders, comparators and multiplexers
+        - Module-level are the basic building blocks of REGISTER TRANSFER METHODOLOGY(RT-level)        
+
+    RT-Level components
+        - Operações aritiméticas realizar apenas com operadores da IEEE numeric_std
+        - std_logic e std_logic_vector quando não realiza operações aritiméticas
+        - Z: Alta impedância ou CIRCUITO ABERTO. Ou seja, o sinal não está dirigindo valor.
+        \Ex: Em sistemas onde multiplos dispositivos usam o mesmo barramento de dados, um 
+        único dirige o barramento por vez, enquanto os demais ficam em alta impedância(Z)
+        - &: Concatenation operator -> b8 <= a4 & a4 
+        - := utilizado para atribuir valor, apenas na inticialização de um signal ou 
+        na atribuição de variáveis
+
+    Routing circuit with concurrent assignment statements
+        - conditional signal and select signal assigment statements are concurrent statements
+        - behave like the if and case statements
+        - r <= a + b + c when m = n else
+        \      a - b     when m > n else
+        \      c + 1;
+
+    Modeling with a process
+        - Sequential statements are executed in sequence
+        - Encapsulated inside a process
+        - process(a,b)
+        \ begin
+            c <= a or b;
+        \ end process; 
+
+    Routing circuit with if and case statements
+        case sel is
+            when cho
 
 
         
