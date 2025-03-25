@@ -133,8 +133,23 @@ Chpt3 - RT-LEVEL COMBINATIONAL CIRCUIT
         \ end process; 
 
     Routing circuit with if and case statements
-        case sel is
-            when cho
+        case s is
+            when ... =>
+                y <= "0001";
+
+    Unintended memory
+        - Include all input signals in the sensitivity list
+        - Include the else branch in an if statement
+        - Assign a value to every signal in every branch 
+    
+    Constants and Generics
+        - A good design practice is to replace the "hard literals" with
+        \symbolic constants
+        - The constant expression is evaluated during preprocessing, so 
+        \requires no physical circuit
+
+    *Não finalizado, depois tentar entender outros circuitos e como executar na FPGA
+    
 
 
         
