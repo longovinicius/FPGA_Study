@@ -45,10 +45,10 @@ begin
 
     -- Instancia o módulo de multiplexação para o display de 7 segmentos
     -- Ele alterna entre os 4 displays, ligando um por vez para exibição correta
-    disp_unit: entity work.disp_mux
-        port map(
-            clk=>clk, reset=>'0',
-            in0=>led0, in1=>led1, in2=>led2, in3=>led3,
-            an=>an, sseg=>sseg
-        );
+    -- disp_unit: entity work.disp_mux
+    --     port map(
+    --         clk=>clk, reset=>'0',
+    --         in0=>led0, in1=>led1, in2=>led2, in3=>led3,
+    --         an=>an, sseg=>sseg
+    --     );
 end arch;
