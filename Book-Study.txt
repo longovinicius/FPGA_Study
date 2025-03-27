@@ -153,8 +153,18 @@ Chpt3 - RT-LEVEL COMBINATIONAL CIRCUIT
 Chpt 4 - REGULAR SEQUENTIAL CIRCUIT
 
     Introduction
-    
+        - A sequential circuit is a circuit with memory, it forms the internal
+        \state of the circuit
+        - The output of the circuit is a function of the input and the internal state 
+        - Syncronous design methodology: All storage elements are controlled by a 
+        \global clock signal and the data is sampled and stored at the rising/falling
+        \edge of the clock signal
 
-        
+    DFF and register 
+        - The most basic storage component in a seq. circuit is the D-type flip-flop 
+        - DFF may contain asyncronous reset signal to clear the FF to '0'
+        - DFF provides 1-bit storage
+        - A collection of DFFs can store multiple bits and is known as register 
+         
 
 
