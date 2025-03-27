@@ -127,6 +127,8 @@ Chpt3 - RT-LEVEL COMBINATIONAL CIRCUIT
     Modeling with a process
         - Sequential statements are executed in sequence
         - Encapsulated inside a process
+        - Sensitivities determinam os sinais que podem causar uma execucao no processo.
+        - O processo sera executado novamente toda vez que um dos sinais listados sofrer mudanca
         - process(a,b)
         \ begin
             c <= a or b;
@@ -164,7 +166,36 @@ Chpt 4 - REGULAR SEQUENTIAL CIRCUIT
         - The most basic storage component in a seq. circuit is the D-type flip-flop 
         - DFF may contain asyncronous reset signal to clear the FF to '0'
         - DFF provides 1-bit storage
+        - There are 3 delays in DFFs: clock-to-q delay, setup time(interval b4 sampling edge), 
+        \hold time(interval after sampling edge)
         - A collection of DFFs can store multiple bits and is known as register 
-         
+        - Syncronous system: next-state logic, state register, output logic
+
+    Maximal Operating Frequency
+        - System timing can't violate setup and hold time constraints
+        - The timing analysis is performed on only one memory component
+        - T_minimum_clock_period = T_clock2q_delay + T_maximum_propagation_delay + T_setup
+        - f_max = 1/T_minimum_clock_period
+        - Constraint file can define f_max and duty cycle of the clock:
+        - NET "clk" TNM_NET = "clk";
+        - TIMESPEC "TS_clk" = PERIOD "clk" 20 ns HIGH 50%;
+
+    Code Development
+        - To better visualize a block diagram of a seq circuit, separate the memory component, 
+        \the rest will be a pure combinational circuit. 
+        - Sequential circuits can be separated into 3 categories:
+        - Regular sequential circuit -> "regular pattern", like a counter, shif register
+        - FSM (Finite state machine) -> No repetitive pattern. Constructed by "random" logic 
+        - FSMD (FSM with data path) -> Regular (data path) + FSM (control path)
+
+    HDL code of the FF and Register
+        - FFs podem ter sinais de reset e enable
+        - O enable e utilizado para manter sincronismo entre um processo rapido e outro lento
+        
+    * Didn't go through Register File, Shif register, codes
+
+    Binary counter
+        - Free binary counter: Circulates through a binary sequence repeatedly. E.g:
+        \4-bit binary counter counts from "0000" to "1111" and wraps around. 
 
 
