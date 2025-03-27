@@ -150,7 +150,10 @@ Chpt3 - RT-LEVEL COMBINATIONAL CIRCUIT
 
     *Não finalizado, depois tentar entender outros circuitos e como executar na FPGA
     
+Chpt 4 - REGULAR SEQUENTIAL CIRCUIT
 
+    Introduction
+    
 
         
 
