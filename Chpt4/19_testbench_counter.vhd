@@ -52,7 +52,7 @@ begin
     process
     begin
         --***************************
-        -- intial input
+        -- initial input
         --***************************
         SYN_CLR <= '0';
         LOAD <= '0';
@@ -67,7 +67,7 @@ begin
         LOAD <= '1';
         D <= "011";
         wait until falling_edge(CLK);
-        load <= '0';
+        LOAD <= '0';
         -- pause 2 clocks
         wait until falling_edge(CLK);
         wait until falling_edge(CLK);
@@ -76,7 +76,7 @@ begin
         --***************************
         SYN_CLR <= '1';
         wait until falling_edge(CLK);
-        SYN_CLR <= '1';
+        SYN_CLR <= '0';
         --***************************
         -- Test up counter and pause
         --***************************
