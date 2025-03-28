@@ -22,50 +22,50 @@
 --------------------------------------------------------------------------
 -- Default libraries
 --------------------------------------------------------------------------
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
+-- library ieee;
+-- use ieee.std_logic_1164.all;
+-- use ieee.numeric_std.all;
 
---------------------------------------------------------------------------
--- User packages
---------------------------------------------------------------------------
+-- --------------------------------------------------------------------------
+-- -- User packages
+-- --------------------------------------------------------------------------
 
---------------------------------------------------------------------------
--- Entity declaration
---------------------------------------------------------------------------
-entity Top_Blinky is
-    port (
-        clk     : in std_logic;
-        reset_n : in std_logic
-    );
-end entity;
+-- --------------------------------------------------------------------------
+-- -- Entity declaration
+-- --------------------------------------------------------------------------
+-- entity Top_Blinky is
+--     port (
+--         clk     : in std_logic;
+--         reset_n : in std_logic
+--     );
+-- end entity;
 
---------------------------------------------------------------------------
--- Architecture
---------------------------------------------------------------------------
-architecture rtl of Top_Blinky is
+-- --------------------------------------------------------------------------
+-- -- Architecture
+-- --------------------------------------------------------------------------
+-- architecture rtl of Top_Blinky is
 
-    signal sysclk : std_logic;
-begin
+--     signal sysclk : std_logic;
+-- begin
 
-    CLK_Multiplier_inst : entity work.CLK_Multiplier
-    port map(
-        clk     => clk,
-        sysclk  => sysclk,
-        reset   => '0',
-        locked  => open
-    );
+--     CLK_Multiplier_inst : entity work.CLK_Multiplier
+--     port map(
+--         clk     => clk,
+--         sysclk  => sysclk,
+--         reset   => '0',
+--         locked  => open
+--     );
 
 
-    blinky: Entity work.Blinky
-    Generic map(
-        CLOCK_FREQ_MHZ  => CLK_FREQUENCY/1e6,
-        PERIOD_US       => 12
-    )
-    Port map(
-        sysclk      => sysclk,
-        reset_n     => reset_n,
-        blinky_o    => blinky_o
-    );
+--     blinky: Entity work.Blinky
+--     Generic map(
+--         CLOCK_FREQ_MHZ  => CLK_FREQUENCY/1e6,
+--         PERIOD_US       => 12
+--     )
+--     Port map(
+--         sysclk      => sysclk,
+--         reset_n     => reset_n,
+--         blinky_o    => blinky_o
+--     );
 
-end architecture;
+-- end architecture;
