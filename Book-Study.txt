@@ -199,3 +199,42 @@ Chpt 4 - REGULAR SEQUENTIAL CIRCUIT
         \4-bit binary counter counts from "0000" to "1111" and wraps around. 
 
 
+Chpt 5 - FSM (Finite State Machine)
+
+    Mealy and Moore outputs
+        - Basic diagram consists of state register, next-state logic and output logic 
+        - Known as Moore machine if output is a function of state
+        - Known as Mealy machine if output is a function of state and external input
+
+    Representation
+        - Usually specified by State Diagram or ASM chart(Algorithmic State Machine Chart)
+        - They capture Input, Output, states and transitions
+        - FSM is more 
+
+Chpt 7 - UART(Universal Asynchronous Receiver and Transmitter)
+
+    Introduction
+        - Sends Parallel data through a serial line
+        - Usually uses EIA RS-232 standard
+        - The FPGA board usually handles the RS-232, only need to concentrate on the
+        \design of the UART circuit
+        - Transmitter is a special shift register that loads data in parallel and then
+        \shifts it out bit by bit at a specific rate
+        - Receiver shifts data bit by bit and then reassembles the data
+        - Before the transmition starts, the Rx and Tx must agree on a set of parameters,
+        \which include the baud rate, number of data btis and stop bits, and use of 
+        parity bit
+        - Oversampling scheme: Sampling rate 16 times the baud rate, so each serial bit is 
+        \sampled 16 times
+
+    Subsystems
+        - Receiver: Baud Rate Generator, UART Receiver, Interface Circuit 
+        - Baud Rate Generator: Generates Sampling signal 16X system's Baud Rate
+        - For 19200 baud rate, sampling will be 307200 ticks/sec. Since SysCLK is 50MHz,
+        \the baud rate generator needs (50M/307200) 163 clock cycles, so M = 163
+        - UART Receiver: 
+
+
+
+
+    
