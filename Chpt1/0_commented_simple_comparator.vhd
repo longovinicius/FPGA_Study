@@ -6,7 +6,7 @@
 -- 1  1     1
 
 -- eq = i_0 . i_1 + !i_0 . !i_1
-
+-- test
 
 -- libraries are needed because the special type std_logic is used
 library ieee;
