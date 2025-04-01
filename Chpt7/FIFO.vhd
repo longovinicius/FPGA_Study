@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity fifo_test is
+entity fifo is
     generic(
         B: natural := 8; -- número de bits
         W: natural := 4  -- número de bits do endereço
@@ -14,12 +14,13 @@ entity fifo_test is
         R_DATA      : out std_logic_vector(B-1 downto 0);
         EMPTY, FULL : out std_logic
     );
-end fifo_test;
-architecture arch of fifo_test is
+end fifo;
+architecture arch of fifo is
     type mem_type is array(0 to 2**W-1) of std_logic_vector(B-1 downto 0);
     signal mem: mem_type := (others => (others => '0'));
     signal wr_ptr, rd_ptr: unsigned(W-1 downto 0);
     signal count: unsigned(W downto 0);
+    signal full_flag, empty_flag: std_logic; -- Sinais internos para FULL e EMPTY
 begin
     process(CLK, RST)
     begin
@@ -28,26 +29,28 @@ begin
             rd_ptr <= (others => '0');
             count  <= (others => '0');
         elsif rising_edge(CLK) then
-            -- Escrita no FIFO (com wrapping)
-            if (WR = '1' and FULL = '0') then
+            if (WR = '1' and full_flag = '0') then
                 mem(to_integer(wr_ptr)) <= W_DATA;
-                wr_ptr <= (wr_ptr + 1) mod (2**W);  -- Volta a zero quando atinge o fim
+                wr_ptr <= (wr_ptr + 1) mod (2**W);  
                 count  <= count + 1;
             end if;
 
-            -- Leitura do FIFO (com wrapping)
-            if (RD = '1' and EMPTY = '0') then
-                rd_ptr <= (rd_ptr + 1) mod (2**W);  -- Volta a zero quando atinge o fim
+            if (RD = '1' and empty_flag = '0') then
+                rd_ptr <= (rd_ptr + 1) mod (2**W);  
                 count  <= count - 1;
             end if;
         end if;
     end process;
 
-    -- Saída de leitura (sempre disponível)
-    R_DATA <= mem(to_integer(rd_ptr)) when EMPTY = '0' else (others => '0');
+    -- Saída de leitura
+    R_DATA <= mem(to_integer(rd_ptr)) when empty_flag = '0' else (others => '0');
 
     -- Controle de flags
-    FULL  <= '1' when count = 2**W else '0';
-    EMPTY <= '1' when count = 0 else '0';
+    full_flag  <= '1' when count = 2**W else '0';
+    empty_flag <= '1' when count = 0 else '0';
+
+    -- Atribuir aos sinais de saída
+    FULL  <= full_flag;
+    EMPTY <= empty_flag;
 
 end arch;

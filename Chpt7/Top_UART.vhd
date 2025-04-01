@@ -51,12 +51,12 @@ begin
                s_tick=>tick, rx_done_tick=>rx_done_tick,
                dout=>rx_data_out);
                
-   fifo_rx_unit: entity work.fifo_test(arch)
+   fifo_rx_unit: entity work.fifo(arch)
       generic map(B=>DBIT, W=>FIFO_W)
       port map(clk=>clk, RST=>reset, rd=>rd_uart,
                wr=>rx_done_tick, w_data=>rx_data_out,
                empty=>rx_empty, full=>open, r_data=>r_data);
-   fifo_tx_unit: entity work.fifo_test(arch)
+   fifo_tx_unit: entity work.fifo(arch)
       generic map(B=>DBIT, W=>FIFO_W)
       port map(clk=>clk, RST=>reset, rd=>tx_done_tick,
                wr=>wr_uart, w_data=>w_data, empty=>tx_empty,
