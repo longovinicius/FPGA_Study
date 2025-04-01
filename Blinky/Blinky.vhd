@@ -22,13 +22,10 @@
 --------------------------------------------------------------------------
 -- Default libraries
 --------------------------------------------------------------------------
+--------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-
---------------------------------------------------------------------------
--- User packages
---------------------------------------------------------------------------
 
 --------------------------------------------------------------------------
 -- Entity declaration
@@ -36,11 +33,10 @@ use ieee.numeric_std.all;
 Entity Blinky is
     Generic (
         CLOCK_FREQ_MHZ  : integer := 200;
-        PERIOD_US       : integer := 1
+        PERIOD_MS       : integer := 500
     );
     Port (
         sysclk      : in std_logic;
-        reset_n     : in std_logic;
         blinky_o    : out std_logic
     );
 End entity;
@@ -50,7 +46,8 @@ End entity;
 --------------------------------------------------------------------------
 Architecture rtl of Blinky is
 
-    constant MAX_CTR_BLINKY : integer := PERIOD_US*CLOCK_FREQ_MHZ;
+    -- Redefinindo a constante para trabalhar com milissegundos
+    constant MAX_CTR_BLINKY : integer := (PERIOD_MS * CLOCK_FREQ_MHZ * 1000) / 2;
     signal ctr_reg          : integer := 0;
     signal blinky_reg       : std_logic := '0';
 
@@ -58,21 +55,15 @@ Begin
 
     blinky_o <= blinky_reg;
 
-    Blinky_seq : process (sysclk, reset_n)
+    Blinky_seq : process (sysclk)
     begin
-        if reset_n = '0' then
-            ctr_reg     <= 0;
-            blinky_reg      <= '0';
-    
-        elsif rising_edge(sysclk) then
-
-            ctr_reg <= ctr_reg + 1;
-
-            if ctr_reg = MAX_CTR_BLINKY - 1 then
+        if rising_edge(sysclk) then
+            if ctr_reg < MAX_CTR_BLINKY - 1 then
+                ctr_reg <= ctr_reg + 1;
+            else
                 ctr_reg <= 0;
-                blinky_reg <= not(blinky_reg);
+                blinky_reg <= not blinky_reg;
             end if;
-
         end if;
     end process;
 
