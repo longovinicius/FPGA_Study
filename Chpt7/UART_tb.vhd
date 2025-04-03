@@ -6,17 +6,25 @@ entity uart_rx_tb is
 end uart_rx_tb;
 
 architecture test of uart_rx_tb is
-    constant CLK_PERIOD      : time := 20 ns; -- Clock de 100 MHz
-    constant SAMPLE_TICK_RATE : time := 320 ns; -- Simula o baud rate (ajuste conforme necessário)
-    
-    signal clk       : std_logic := '0';
-    signal reset     : std_logic := '1';
-    signal rx        : std_logic := '1'; -- Começa em idle (nível alto)
+    -- Definições de Clock e Baud Rate
+    constant CLK_FREQ_HZ      : integer := 50_000_000; -- 50 MHz
+    constant BAUD_RATE        : integer := 19200;
+    constant SAMPLE_TICKS     : integer := 16; -- 16 amostras por bit
+
+    -- Calculando os tempos automaticamente
+    constant CLK_PERIOD       : time := 1 sec / CLK_FREQ_HZ; -- 20 ns (50 MHz)
+    constant BIT_PERIOD       : time := 1 sec / BAUD_RATE; -- 52.08 us
+    constant SAMPLE_TICK_RATE : time := BIT_PERIOD / SAMPLE_TICKS; -- 3.255 us
+
+    -- Sinais de teste
+    signal clk         : std_logic := '0';
+    signal reset       : std_logic := '1';
+    signal rx          : std_logic := '1'; -- Começa em idle (nível alto)
     signal sample_tick : std_logic := '0';
     signal rx_done_tick : std_logic;
-    signal dout      : std_logic_vector(7 downto 0);
+    signal dout        : std_logic_vector(7 downto 0);
 
-    -- Instância do DUT (Device Under Test)
+    -- Instância do UART RX (DUT - Device Under Test)
     component uart_rx
         generic (
             DATA_BIT_WIDTH  : integer := 8;
@@ -48,7 +56,7 @@ begin
             dout         => dout
         );
 
-    -- Gerador de clock
+    -- Gerador de clock de 50 MHz
     process
     begin
         while true loop
@@ -57,7 +65,7 @@ begin
         end loop;
     end process;
 
-    -- Simulando o baud rate (sample_tick)
+    -- Gerador de `sample_tick` baseado no baud rate de 19200
     process
     begin
         while true loop
@@ -79,21 +87,21 @@ begin
 
         -- Enviar start bit (0)
         rx <= '0';
-        wait for SAMPLE_TICK_RATE * 16; -- Duração de um bit completo
+        wait for BIT_PERIOD;
 
         -- Enviar dados (0b10101010 = 0xAA)
-        rx <= '0'; wait for SAMPLE_TICK_RATE * 16; -- Bit 0
-        rx <= '1'; wait for SAMPLE_TICK_RATE * 16; -- Bit 1
-        rx <= '0'; wait for SAMPLE_TICK_RATE * 16; -- Bit 2
-        rx <= '1'; wait for SAMPLE_TICK_RATE * 16; -- Bit 3
-        rx <= '0'; wait for SAMPLE_TICK_RATE * 16; -- Bit 4
-        rx <= '1'; wait for SAMPLE_TICK_RATE * 16; -- Bit 5
-        rx <= '0'; wait for SAMPLE_TICK_RATE * 16; -- Bit 6
-        rx <= '1'; wait for SAMPLE_TICK_RATE * 16; -- Bit 7
+        rx <= '0'; wait for BIT_PERIOD; -- Bit 0
+        rx <= '1'; wait for BIT_PERIOD; -- Bit 1
+        rx <= '0'; wait for BIT_PERIOD; -- Bit 2
+        rx <= '1'; wait for BIT_PERIOD; -- Bit 3
+        rx <= '0'; wait for BIT_PERIOD; -- Bit 4
+        rx <= '1'; wait for BIT_PERIOD; -- Bit 5
+        rx <= '0'; wait for BIT_PERIOD; -- Bit 6
+        rx <= '1'; wait for BIT_PERIOD; -- Bit 7
 
         -- Enviar stop bit (1)
         rx <= '1';
-        wait for SAMPLE_TICK_RATE * 16;
+        wait for BIT_PERIOD;
 
         -- Aguardar fim da recepção
         wait for 200 ns;
