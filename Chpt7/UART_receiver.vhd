@@ -10,7 +10,7 @@ entity uart_rx is
     port(
         clk, reset      : in std_logic;
         rx              : in std_logic;
-        sample_tick   : in std_logic; -- enable tick from the baud rate generator
+        sample_tick     : in std_logic; -- enable tick from the baud rate generator
         rx_done_tick    : out std_logic;
         dout            : out std_logic_vector(7 downto 0)
     );
@@ -31,7 +31,7 @@ begin
             tick_counter_reg <= (others=>'0');
             bit_counter_reg <= (others=>'0');
             rx_shift_reg <= (others=>'0');
-        elsif(clk'event and clk = '1') then
+        elsif(rising_edge(clk)) then 
             state_reg <= state_next;
             tick_counter_reg <= tick_counter_next;
             bit_counter_reg <= bit_counter_next;
@@ -48,12 +48,12 @@ begin
         rx_done_tick <= '0';
         case state_reg is
             when idle =>
-                if (sample_tick = '1' and rx='0') then
+                if rising_edge(sample_tick) and rx='0' then
                     state_next <= start;
                     tick_counter_next <= (others=>'0');
                 end if;
             when start =>
-                if (sample_tick = '1') then
+                if rising_edge(sample_tick) then
                     if tick_counter_reg=7 then
                         state_next <= data;
                         tick_counter_next <= (others=>'0');
@@ -62,7 +62,7 @@ begin
                     end if;
                 end if;
             when data =>
-                if (sample_tick = '1') then
+                if rising_edge(sample_tick) then
                     if tick_counter_reg=15 then
                         tick_counter_next <= (others=>'0');
                         rx_shift_next <= rx & rx_shift_reg(DATA_BIT_WIDTH-1 downto 1) ; -- esta certo?
@@ -77,7 +77,7 @@ begin
                     end if;
                 end if;
             when stop =>
-                if (sample_tick = '1') then
+                if rising_edge(sample_tick) then
                     if tick_counter_reg=(STOP_BIT_TICKS-1) then
                         state_next <= idle;
                         rx_done_tick <= '1';
