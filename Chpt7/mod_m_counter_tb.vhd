@@ -22,7 +22,7 @@ begin
         port map(sys_clock => sys_clk, 
                 reset_n => reset_n, 
                 q_out => open, 
-                max_tick => max_tick
+                max_tick_o => max_tick
             );
 
     -- Geração do clock
