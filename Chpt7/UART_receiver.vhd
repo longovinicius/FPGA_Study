@@ -65,7 +65,7 @@ begin
                 if (sample_tick = '1') then
                     if tick_counter_reg=15 then
                         tick_counter_next <= (others=>'0');
-                        rx_shift_next <= rx_shift_reg(DATA_BIT_WIDTH-2 downto 0) & rx ; -- esta certo?
+                        rx_shift_next <= rx & rx_shift_reg(DATA_BIT_WIDTH-1 downto 1) ; -- esta certo?
                         if bit_counter_reg=(DATA_BIT_WIDTH-1) then
                             bit_counter_next <= (others=>'0');                            
                             state_next <= stop;
