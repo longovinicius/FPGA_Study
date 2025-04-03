@@ -45,7 +45,7 @@ begin
         reset_n <= '0';
 
         -- Aguardar alguns ciclos
-        wait for CLK_PERIOD * 50;
+        wait for CLK_PERIOD * 1630;
         
         -- Finaliza simulação
         wait;
