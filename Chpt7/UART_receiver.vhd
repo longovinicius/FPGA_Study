@@ -4,13 +4,13 @@ use ieee.numeric_std.all;
 
 entity uart_rx is
     generic(
-        DBIT    : integer := 8; -- data bits
-        SB_TICK : integer := 16 -- number of bits for the stop bits (16, 24 or 32)
+        DATA_BIT_WIDTH    : integer := 8; -- data bits
+        STOP_BIT_TICKS : integer := 16 -- number of bits for the stop bits (16, 24 or 32)
     );
     port(
         clk, reset      : in std_logic;
         rx              : in std_logic;
-        s_tick          : in std_logic; -- enable tick from the baud rate generator
+        sample_tick   : in std_logic; -- enable tick from the baud rate generator
         rx_done_tick    : out std_logic;
         dout            : out std_logic_vector(7 downto 0)
     );
@@ -19,75 +19,75 @@ end uart_rx;
 architecture arch of uart_rx is
     type state_type is (idle, start, data, stop);
     signal state_reg, state_next    : state_type;
-    signal s_reg, s_next            : unsigned(3 downto 0);
-    signal n_reg, n_next            : unsigned(2 downto 0);
-    signal b_reg, b_next            : std_logic_vector(7 downto 0);
+    signal tick_counter_reg, tick_counter_next            : unsigned(3 downto 0);
+    signal bit_counter_reg, bit_counter_next            : unsigned(2 downto 0);
+    signal rx_shift_reg, rx_shift_next            : std_logic_vector(7 downto 0);
 begin
     -- FSMD state & data registers
     process(clk, reset)
     begin
         if reset = '1' then
             state_reg <= idle;
-            s_reg <= (others=>'0');
-            n_reg <= (others=>'0');
-            b_reg <= (others=>'0');
+            tick_counter_reg <= (others=>'0');
+            bit_counter_reg <= (others=>'0');
+            rx_shift_reg <= (others=>'0');
         elsif(clk'event and clk = '1') then
             state_reg <= state_next;
-            s_reg <= s_next;
-            n_reg <= n_next;
-            b_reg <= b_next;
+            tick_counter_reg <= tick_counter_next;
+            bit_counter_reg <= bit_counter_next;
+            rx_shift_reg <= rx_shift_next;
         end if;
     end process;
     -- next-state logic and data path functional units/routing
-    process(state_reg, s_reg, n_reg, b_reg, s_tick, rx)
+    process(state_reg, tick_counter_reg, bit_counter_reg, rx_shift_reg, sample_tick, rx)
     begin
         state_next <= state_reg;
-        s_next <= s_reg; -- keeps track of the number of sampling ticks 
-        n_next <= n_reg; -- keeps track of the number of data bits received
-        b_next <= b_reg; -- armazena bits recebidos e desloca os dados corretamente
+        tick_counter_next <= tick_counter_reg; -- keeps track of the number of sampling ticks 
+        bit_counter_next <= bit_counter_reg; -- keeps track of the number of data bits received
+        rx_shift_next <= rx_shift_reg; -- armazena bits recebidos e desloca os dados corretamente
         rx_done_tick <= '0';
         case state_reg is
             when idle =>
-                if (rx='0') then
+                if (sample_tick = '1' and rx='0') then
                     state_next <= start;
-                    s_next <= (others=>'0');
+                    tick_counter_next <= (others=>'0');
                 end if;
             when start =>
-                if (s_tick = '1') then
-                    if s_reg=7 then
+                if (sample_tick = '1') then
+                    if tick_counter_reg=7 then
                         state_next <= data;
-                        s_next <= (others=>'0');
-                        n_next <= (others=>'0');
+                        tick_counter_next <= (others=>'0');
                     else
-                        s_next <= s_reg + 1;
+                        tick_counter_next <= tick_counter_reg + 1;
                     end if;
                 end if;
             when data =>
-                if (s_tick = '1') then
-                    if s_reg=15 then
-                        s_next <= (others=>'0');
-                        b_next <= rx & b_reg(7 downto 1);
-                        if n_reg=(DBIT-1) then
+                if (sample_tick = '1') then
+                    if tick_counter_reg=15 then
+                        tick_counter_next <= (others=>'0');
+                        rx_shift_next <= rx_shift_reg(DATA_BIT_WIDTH-2 downto 0) & rx ; -- esta certo?
+                        if bit_counter_reg=(DATA_BIT_WIDTH-1) then
+                            bit_counter_next <= (others=>'0');                            
                             state_next <= stop;
                         else
-                            n_next <= n_reg + 1;
+                            bit_counter_next <= bit_counter_reg + 1;
                         end if;
                     else
-                        s_next <= s_reg + 1;
+                        tick_counter_next <= tick_counter_reg + 1;
                     end if;
                 end if;
             when stop =>
-                if (s_tick = '1') then
-                    if s_reg=(SB_TICK-1) then
+                if (sample_tick = '1') then
+                    if tick_counter_reg=(STOP_BIT_TICKS-1) then
                         state_next <= idle;
                         rx_done_tick <= '1';
                     else
-                        s_next <= s_reg + 1;
+                        tick_counter_next <= tick_counter_reg + 1;
                     end if;
                 end if;
         end case;
     end process;
-    dout <= b_reg;
+    dout <= rx_shift_reg;
 end arch;
                 
 

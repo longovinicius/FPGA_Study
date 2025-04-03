@@ -1,42 +1,46 @@
--- mod-m counter as described in P.P. Chu's textbook on page 83;
--- instantiated inside uart entity; it counts from 0 to m-1 and 
--- then wraps around;
+-- Counter 
 
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use ieee.math_real.all;
 
-entity mod_m_counter is
+entity mod_counter is
    generic(
-      N: integer := 4; -- number of bits
-      M: integer := 10 -- mod-M
-  );
-   port(
-      clk, reset: in std_logic;
-      max_tick: out std_logic;
-      q: out std_logic_vector(N-1 downto 0)
+      MAX_COUNT   : integer := 10;
+      BIT_WIDTH   : integer := 4
    );
-end mod_m_counter;
+   port(
+      sys_clock   : in std_logic;
+      reset_n     : in std_logic;
 
-architecture arch of mod_m_counter is
-   signal r_reg: unsigned(N-1 downto 0);
-   signal r_next: unsigned(N-1 downto 0);
-   
+      max_tick    : out std_logic;
+      q_out       : out std_logic_vector(BIT_WIDTH-1 downto 0)
+   );
+end mod_counter;
+
+architecture arch of mod_counter is
+
+   signal r_reg, r_next    : unsigned(BIT_WIDTH-1 downto 0);
+
 begin
-
-   -- register
-   process(clk,reset)
+   -- register logic
+   process(sys_clock, reset_n)
    begin
-      if (reset='1') then
-         r_reg <= (others=>'0');
-      elsif (clk'event and clk='1') then
+      if reset_n = '1' then 
+         r_reg <= (others => ('0'));
+      elsif rising_edge(sys_clock) then
          r_reg <= r_next;
       end if;
    end process;
-   -- next-state logic
-   r_next <= (others=>'0') when r_reg=(M-1) else
+   
+   -- next-step logic
+   r_next <= (others => ('0')) when r_reg = (MAX_COUNT -1) else
              r_reg + 1;
+
    -- output logic
-   q <= std_logic_vector(r_reg);
-   max_tick <= '1' when r_reg=(M-1) else '0';
-end arch;
+   q_out <= std_logic_vector(r_reg);
+   max_tick <= '1' when r_reg = (MAX_COUNT - 1) else
+               '0';
+
+end arch ; -- arch

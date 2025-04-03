@@ -2,106 +2,111 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity uart_tb is
-end uart_tb;
+entity uart_rx_tb is
+end uart_rx_tb;
 
-architecture tb of uart_tb is
-   -- Sinais para conexão com a UART
-   signal clk_tb      : std_logic := '0';
-   signal reset_tb    : std_logic := '1';
-   signal rd_uart_tb  : std_logic := '0';
-   signal wr_uart_tb  : std_logic := '0';
-   signal rx_tb       : std_logic := '1';
-   signal w_data_tb   : std_logic_vector(7 downto 0) := (others => '0');
-   signal tx_full_tb  : std_logic;
-   signal rx_empty_tb : std_logic;
-   signal r_data_tb   : std_logic_vector(7 downto 0);
-   signal tx_tb       : std_logic;
-   signal rx_data_tb : std_logic_vector(7 downto 0) := "01010101";
+architecture test of uart_rx_tb is
+    constant CLK_PERIOD      : time := 20 ns; -- Clock de 100 MHz
+    constant SAMPLE_TICK_RATE : time := 320 ns; -- Simula o baud rate (ajuste conforme necessário)
+    
+    signal clk       : std_logic := '0';
+    signal reset     : std_logic := '1';
+    signal rx        : std_logic := '1'; -- Começa em idle (nível alto)
+    signal sample_tick : std_logic := '0';
+    signal rx_done_tick : std_logic;
+    signal dout      : std_logic_vector(7 downto 0);
 
-
-   -- Parâmetros da UART (usar os mesmos do seu top-level)
-   constant CLK_PERIOD : time := 20 ns;  -- Clock de 50 MHz (1/50MHz = 20 ns)
+    -- Instância do DUT (Device Under Test)
+    component uart_rx
+        generic (
+            DATA_BIT_WIDTH  : integer := 8;
+            STOP_BIT_TICKS  : integer := 16
+        );
+        port (
+            clk          : in std_logic;
+            reset        : in std_logic;
+            rx           : in std_logic;
+            sample_tick  : in std_logic;
+            rx_done_tick : out std_logic;
+            dout         : out std_logic_vector(7 downto 0)
+        );
+    end component;
 
 begin
+    -- Instanciando o módulo UART Receiver
+    uut: uart_rx
+        generic map (
+            DATA_BIT_WIDTH => 8,
+            STOP_BIT_TICKS => 16
+        )
+        port map (
+            clk          => clk,
+            reset        => reset,
+            rx           => rx,
+            sample_tick  => sample_tick,
+            rx_done_tick => rx_done_tick,
+            dout         => dout
+        );
 
-   -- Instância da UART
-   uut: entity work.uart(str_arch)
-      generic map(
-         DBIT => 8,
-         SB_TICK => 16,
-         DVSR => 163,
-         DVSR_BIT => 9,
-         FIFO_W => 5
-      )
-      port map(
-         clk => clk_tb,
-         reset => reset_tb,
-         rd_uart => rd_uart_tb,
-         wr_uart => wr_uart_tb,
-         rx => rx_tb,
-         w_data => w_data_tb,
-         tx_full => tx_full_tb,
-         rx_empty => rx_empty_tb,
-         r_data => r_data_tb,
-         tx => tx_tb
-      );
+    -- Gerador de clock
+    process
+    begin
+        while true loop
+            clk <= not clk;
+            wait for CLK_PERIOD / 2;
+        end loop;
+    end process;
 
-   -- Geração do clock (50 MHz)
-   process
-   begin
-      while true loop
-         clk_tb <= '0';
-         wait for CLK_PERIOD / 2;
-         clk_tb <= '1';
-         wait for CLK_PERIOD / 2;
-      end loop;
-   end process;
+    -- Simulando o baud rate (sample_tick)
+    process
+    begin
+        while true loop
+            sample_tick <= '1';
+            wait for SAMPLE_TICK_RATE / 2;
+            sample_tick <= '0';
+            wait for SAMPLE_TICK_RATE / 2;
+        end loop;
+    end process;
 
-   -- Processo de teste
-   process
-   begin
-      -- Reset inicial
-      reset_tb <= '1';
-      wait for 100 ns;  -- Espera um tempo para resetar
-      reset_tb <= '0';
+    -- Processo de simulação da recepção UART
+    process
+    begin
+        -- Reset inicial
+        reset <= '1';
+        wait for 100 ns;
+        reset <= '0';
+        wait for 100 ns;
 
-      -- Teste 1: Enviar um byte pela UART
-      wait for 50 ns;
-      w_data_tb <= "10101010";  -- Enviar dado 0xAA
-      wr_uart_tb <= '1';  -- Habilitar escrita
-      wait for CLK_PERIOD;
-      wr_uart_tb <= '0';  -- Desabilitar escrita
+        -- Enviar start bit (0)
+        rx <= '0';
+        wait for SAMPLE_TICK_RATE * 16; -- Duração de um bit completo
 
-      -- Espera processamento
-      wait for 500 ns;
+        -- Enviar dados (0b10101010 = 0xAA)
+        rx <= '0'; wait for SAMPLE_TICK_RATE * 16; -- Bit 0
+        rx <= '1'; wait for SAMPLE_TICK_RATE * 16; -- Bit 1
+        rx <= '0'; wait for SAMPLE_TICK_RATE * 16; -- Bit 2
+        rx <= '1'; wait for SAMPLE_TICK_RATE * 16; -- Bit 3
+        rx <= '0'; wait for SAMPLE_TICK_RATE * 16; -- Bit 4
+        rx <= '1'; wait for SAMPLE_TICK_RATE * 16; -- Bit 5
+        rx <= '0'; wait for SAMPLE_TICK_RATE * 16; -- Bit 6
+        rx <= '1'; wait for SAMPLE_TICK_RATE * 16; -- Bit 7
 
-      -- Teste 2: Simular recepção de dado
-      rx_tb <= '0';  -- Início do start bit
-      wait for 16 * CLK_PERIOD;  -- Tempo de um bit
-      
-      -- Enviar 8 bits de dados (0x55 = "01010101")
-      for i in 0 to 7 loop
-        rx_tb <= rx_data_tb(i);
-        wait for 16 * CLK_PERIOD;  -- Tempo de um bit
-     end loop;
-  
+        -- Enviar stop bit (1)
+        rx <= '1';
+        wait for SAMPLE_TICK_RATE * 16;
 
-      -- Enviar stop bit
-      rx_tb <= '1';
-      wait for 16 * CLK_PERIOD;
+        -- Aguardar fim da recepção
+        wait for 200 ns;
 
-      -- Ativar leitura
-      wait for 50 ns;
-      rd_uart_tb <= '1';
-      wait for CLK_PERIOD;
-      rd_uart_tb <= '0';
+        -- Verificar se `rx_done_tick` foi acionado corretamente
+        if rx_done_tick = '1' then
+            report "Recebido: " & integer'image(to_integer(unsigned(dout))) severity note;
+        else
+            report "Erro na recepção!" severity error;
+        end if;
 
-      -- Espera verificação
-      wait for 500 ns;
-      
-      -- Finaliza a simulação
-      wait;
-   end process;
+        -- Finalizar a simulação
+        wait;
+    end process;
 
-end tb;
+end test;
