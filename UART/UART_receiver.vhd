@@ -4,15 +4,16 @@ use ieee.numeric_std.all;
 
 entity uart_rx is
     generic(
-        DATA_BIT_WIDTH    : integer := 8; -- data bits
-        STOP_BIT_TICKS : integer := 16 -- number of bits for the stop bits (16, 24 or 32)
+        DATA_BIT_WIDTH    : integer := 8; 
+        STOP_BIT_TICKS : integer := 16 -- could be 16, 24 or 32
     );
     port(
-        clk, reset      : in std_logic;
+        sys_clk         : in std_logic;
+        reset_n         : in std_logic;
         rx              : in std_logic;
         sample_tick     : in std_logic; -- enable tick from the baud rate generator
         rx_done_tick    : out std_logic;
-        dout            : out std_logic_vector(7 downto 0)
+        data_out            : out std_logic_vector(7 downto 0)
     );
 end uart_rx;
 
@@ -24,27 +25,28 @@ architecture arch of uart_rx is
     signal rx_shift_reg, rx_shift_next            : std_logic_vector(7 downto 0);
 begin
     -- FSMD state & data registers
-    process(clk, reset)
+    process(sys_clk, reset_n)
     begin
-        if reset = '1' then
+        if reset_n = '1' then
             state_reg <= idle;
             tick_counter_reg <= (others=>'0');
             bit_counter_reg <= (others=>'0');
             rx_shift_reg <= (others=>'0');
-        elsif(rising_edge(clk)) then 
+        elsif(rising_edge(sys_clk)) then 
             state_reg <= state_next;
             tick_counter_reg <= tick_counter_next;
             bit_counter_reg <= bit_counter_next;
             rx_shift_reg <= rx_shift_next;
         end if;
     end process;
+    
     -- next-state logic and data path functional units/routing
     process(state_reg, tick_counter_reg, bit_counter_reg, rx_shift_reg, sample_tick, rx)
     begin
         state_next <= state_reg;
         tick_counter_next <= tick_counter_reg; -- keeps track of the number of sampling ticks 
         bit_counter_next <= bit_counter_reg; -- keeps track of the number of data bits received
-        rx_shift_next <= rx_shift_reg; -- armazena bits recebidos e desloca os dados corretamente
+        rx_shift_next <= rx_shift_reg; -- store bits received and shift the data correctely
         rx_done_tick <= '0';
         case state_reg is
             when idle =>
@@ -65,7 +67,7 @@ begin
                 if rising_edge(sample_tick) then
                     if tick_counter_reg=15 then
                         tick_counter_next <= (others=>'0');
-                        rx_shift_next <= rx & rx_shift_reg(DATA_BIT_WIDTH-1 downto 1) ; -- esta certo?
+                        rx_shift_next <= rx & rx_shift_reg(DATA_BIT_WIDTH-1 downto 1) ; -- rx enters in 8th position, which is the LSB
                         if bit_counter_reg=(DATA_BIT_WIDTH-1) then
                             bit_counter_next <= (others=>'0');                            
                             state_next <= stop;
@@ -87,7 +89,7 @@ begin
                 end if;
         end case;
     end process;
-    dout <= rx_shift_reg;
+    data_out <= rx_shift_reg;
 end arch;
                 
 

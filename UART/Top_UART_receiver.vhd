@@ -4,11 +4,12 @@ use ieee.numeric_std.all;
 
 entity uart_rx_top is
     port (
-        clk        : in std_logic;  -- Clock de 50 MHz
-        reset      : in std_logic;  -- Reset global
+        sys_clk        : in std_logic;  -- Clock de 50 MHz
+        reset_n      : in std_logic;  -- Reset global
+
         rx         : in std_logic;  -- Entrada serial RX
-        rx_done    : out std_logic; -- Indica que um byte foi recebido
-        dout       : out std_logic_vector(7 downto 0) -- Dados recebidos
+        rx_done_tick    : out std_logic; -- Indica que um byte foi recebido
+        data_out       : out std_logic_vector(7 downto 0) -- Dados recebidos
     );
 end uart_rx_top;
 
@@ -26,10 +27,10 @@ begin
             BIT_WIDTH => COUNTER_BIT_WIDTH
         )
         port map (
-            sys_clock  => clk,
-            reset_n    => reset,
-            q_out      => open,
-            max_tick_o => sample_tick
+            sys_clk  => sys_clk,
+            reset_n    => reset_n,
+            q      => open,
+            max_tick => sample_tick
         );
 
     uart_receiver: entity work.uart_rx(arch)
@@ -38,11 +39,11 @@ begin
             STOP_BIT_TICKS => 16
         )
         port map (
-            clk          => clk,
-            reset        => reset,
+            sys_clk          => sys_clk,
+            reset_n        => reset_n,
             sample_tick  => sample_tick,
             rx           => rx,
-            rx_done_tick => rx_done,
-            dout         => dout
+            rx_done_tick => rx_done_tick,
+            data_out         => data_out
         );
 end arch;

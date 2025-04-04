@@ -23,11 +23,11 @@ begin
     -- Instância do módulo top-level
     uut: entity work.uart_rx_top(arch)
         port map (
-            clk      => clk,
-            reset    => reset,
+            sys_clk      => clk,
+            reset_n    => reset,
             rx       => rx,
-            rx_done  => rx_done,
-            dout     => dout
+            rx_done_tick  => rx_done,
+            data_out     => dout
         );
 
     -- Geração do clock de 50 MHz
