@@ -1,0 +1,8 @@
+0.7
+2020.2
+Oct 19 2021
+03:16:22
+,,,C:/Users/longo/Documents/FPGA_Study/UART/Top_UART_receiver.vhd,,,uart_rx,,,,,,,,
+,,,C:/Users/longo/Documents/FPGA_Study/UART/Top_UART_receiver.vhd,,,mod_counter,,,,,,,,
+C:/Users/longo/Documents/FPGA_Study/UART/Top_UART_receiver.vhd,1743699933,vhdl,C:/Users/longo/Documents/FPGA_Study/UART_tb/Top_UART_receiver_tb.vhd,,,uart_rx_top,,,,,,,,
+C:/Users/longo/Documents/FPGA_Study/UART_tb/Top_UART_receiver_tb.vhd,1743700034,vhdl,,,,uart_rx_top_tb,,,,,,,,
