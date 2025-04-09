@@ -1,4 +1,0 @@
-INFO: [VRFC 10-163] Analyzing VHDL file "C:/Users/longo/Documents/FPGA_Study/UART/Top_UART_receiver.vhd" into library xil_defaultlib
-INFO: [VRFC 10-3107] analyzing entity 'uart_rx_top'
-INFO: [VRFC 10-163] Analyzing VHDL file "C:/Users/longo/Documents/FPGA_Study/UART_tb/Top_UART_receiver_tb.vhd" into library xil_defaultlib
-INFO: [VRFC 10-3107] analyzing entity 'uart_rx_top_tb'

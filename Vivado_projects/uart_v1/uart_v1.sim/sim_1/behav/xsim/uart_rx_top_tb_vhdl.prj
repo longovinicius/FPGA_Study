@@ -1,7 +1,0 @@
-# compile vhdl design source files
-vhdl xil_defaultlib  \
-"../../../../../../Documents/FPGA_Study/UART/Top_UART_receiver.vhd" \
-"../../../../../../Documents/FPGA_Study/UART_tb/Top_UART_receiver_tb.vhd" \
-
-# Do not sort compile order
-nosort

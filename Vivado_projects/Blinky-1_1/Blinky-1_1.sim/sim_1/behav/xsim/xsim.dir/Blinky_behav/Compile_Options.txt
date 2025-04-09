@@ -1,1 +1,0 @@
---incr --debug "typical" --relax --mt "2" -L "xil_defaultlib" -L "secureip" -L "xpm" --snapshot "Blinky_behav" "xil_defaultlib.Blinky" -log "elaborate.log" 
