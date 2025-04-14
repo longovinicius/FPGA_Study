@@ -53,6 +53,7 @@ Begin
         PERIOD_MS       => 500
     )
     Port map(
+        enable_in => '1',
         sysclk      => sysclk,
         blinky_o    => blinky_o
     );

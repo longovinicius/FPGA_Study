@@ -8,9 +8,9 @@ end uart_rx_top_tb;
 architecture tb of uart_rx_top_tb is
     -- Constantes
     constant CLK_FREQ   : real := 50.0e6; -- 50 MHz
-    constant CLK_PERIOD : time := 1 sec / CLK_FREQ;
+    constant CLK_PERIOD : time := 1 sec / CLK_FREQ; -- 20 ns
     constant BAUD_RATE  : integer := 19200;
-    constant BIT_PERIOD : time := 1 sec / BAUD_RATE; -- Tempo de um bit
+    constant BIT_PERIOD : time := 1 sec / BAUD_RATE; -- Tempo de um bit (52 us)
 
     -- Sinais
     signal clk       : std_logic := '0';

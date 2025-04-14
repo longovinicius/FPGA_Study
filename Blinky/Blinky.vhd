@@ -37,9 +37,12 @@ Entity Blinky is
     );
     Port (
         sysclk      : in std_logic;
+        enable_in   : in std_logic;
+        
         blinky_o    : out std_logic
     );
 End entity;
+
 
 --------------------------------------------------------------------------
 -- Architecture
@@ -55,9 +58,12 @@ Begin
 
     blinky_o <= blinky_reg;
 
-    Blinky_seq : process (sysclk)
+    Blinky_seq : process (sysclk, enable_in)
     begin
-        if rising_edge(sysclk) then
+        if enable_in = '0' then 
+            blinky_reg <= '0';
+            ctr_reg <= 0;
+        elsif rising_edge(sysclk) then
             if ctr_reg < MAX_CTR_BLINKY - 1 then
                 ctr_reg <= ctr_reg + 1;
             else

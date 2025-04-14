@@ -19,10 +19,10 @@ begin
     -- Instância do gerador de baud rate
     uut: entity work.mod_counter(arch)
         generic map(MAX_COUNT => CLOCK_DIVISOR, BIT_WIDTH => COUNTER_BIT_WIDTH)
-        port map(sys_clock => sys_clk, 
+        port map(sys_clk => sys_clk, 
                 reset_n => reset_n, 
-                q_out => open, 
-                max_tick_o => max_tick
+                q => open, 
+                max_tick => max_tick
             );
 
     -- Geração do clock
